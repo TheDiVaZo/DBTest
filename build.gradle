@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id "org.jooq.jooq-codegen-gradle" version "3.19.14"
+}
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+sourceSets.main.java.srcDirs += 'build/generated/sources/headers/java/main'
+
+group = 'me.thedivazo.dbtest'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jooq:jooq:3.19.14'
+    implementation 'org.jooq:jooq-meta:3.19.14'
+    implementation 'org.jooq:jooq-codegen:3.19.14'
+    implementation "org.jooq:jooq-meta-extensions:3.19.14"
+    //compileOnly 'org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin:3.19.14'
+
+    implementation 'org.xerial:sqlite-jdbc:3.47.0.0'
+
+    jooqCodegen 'org.xerial:sqlite-jdbc:3.47.0.0'
+    jooqCodegen 'org.jooq:jooq-meta-extensions:3.19.14'
+
+
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+jooq {
+    configuration {
+        generator {
+            database {
+                name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                properties {
+                    property {
+                        key = "scripts"
+                        value = "src/main/resources/bookshema.sql"
+                    }
+                }
+                target {
+                    packageName = "me.thedivazo.dbtest.db"
+                    directory = "build/generated/sources/headers/java/main"
+                }
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
